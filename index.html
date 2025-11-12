@@ -110,7 +110,13 @@ function generateText(words, callback){
         span.textContent = words[index] + " ";
         span.classList.add("fade-in");
         container.appendChild(span);
-
+// Applica effetti solo dalla quarta parola con delay più lento
+      setTimeout(()=>{
+        const allWords = container.querySelectorAll("span");
+        const randomIndex = Math.floor(Math.random() * allWords.length);
+        randomEffect(allWords[randomIndex]);
+    }, effectDelay);
+}
         // Scroll se necessario
         if(container.scrollHeight > window.innerHeight){
             window.scrollTo({ top: container.scrollHeight - window.innerHeight, behavior: "smooth" });
