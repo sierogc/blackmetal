@@ -184,7 +184,7 @@ function shuffleArray(array){
 
     // genera una nuova disposizione finché non è unica
     do {
-      newArr = array.slice().sort(() => Math.random() - 0.5);
+      newArr = array.slice().sort(() => Math.random());
       alreadyUsed = previousOrders.some(order =>
         order.join(" ") === newArr.join(" ")
       );
