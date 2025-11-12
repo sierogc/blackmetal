@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heavy Metal!</title>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      font-size: 5vw; 
+      margin: 0;
+      padding: 2rem;
+      line-height: 1.4;
+      overflow-y: hidden; /* Scroll gestito manualmente */
+    }
+
+    #text-container {
+      max-width: 90%;
+      text-align: justify;  /* Giustificato */
+      hyphens: none;        /* No trattini automatici */
+      word-wrap: normal;
+    }
+
+    /* Ultima riga allineata a destra */
+    #text-container::after {
+      content: "";
+      display: inline-block;
+      width: 100%;
+      text-align: right;
+    }
+
+    /* Effetti base */
+    .underline { text-decoration: underline; }
+    .italic { font-style: italic; }
+    .strikethrough { text-decoration: line-through; }
+
+    /* Colori arcobaleno */
+    .red { color: #ff4d4d; }
+    .orange { color: #ffa64d; }
+    .yellow { color: #ffff66; }
+    .green { color: #80ff80; }
+    .blue { color: #66b3ff; }
+    .indigo { color: #9999ff; }
+    .violet { color: #e580ff; }
+
+    /* Animazione apparizione */
+    .fade-in {
+      opacity: 0;
+      animation: fade 0.6s forwards;
+    }
+    @keyframes fade {
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div id="text-container"></div>
+
+  <script>
+    const text = "Questo è un esempio di testo che apparirà parola per parola, giustificato, senza trattini automatici e con effetti casuali sulle parole precedenti.";
+    const container = document.getElementById("text-container");
+    const words = text.split(" ");
+    const rainbowColors = ["red","orange","yellow","green","blue","indigo","violet"];
+    let lastColor = null;
+    let index = 0;
+    const delay = 500;
+
+    function randomEffect(wordEl){
+      wordEl.className = "";
+      // Colore casuale diverso dal precedente
+      let color;
+      do { color = rainbowColors[Math.floor(Math.random()*rainbowColors.length)]; } 
+      while(color === lastColor);
+      lastColor = color;
+      wordEl.classList.add(color);
+
+      // Effetto casuale
+      const effects = ["underline","italic","strikethrough",""];
+      const eff = effects[Math.floor(Math.random()*effects.length)];
+      if(eff) wordEl.classList.add(eff);
+    }
+
+    function addWord(){
+      if(index >= words.length) return;
+
+      const span = document.createElement("span");
+      span.textContent = words[index] + " ";
+      span.classList.add("fade-in");
+      container.appendChild(span);
+
+      // Aggiorna tutte le parole
+      container.querySelectorAll("span").forEach(w => randomEffect(w));
+
+      // Scroll se il testo supera l’altezza della finestra
+      if(container.scrollHeight > window.innerHeight){
+        window.scrollTo({ top: container.scrollHeight - window.innerHeight, behavior: "smooth" });
+      }
+
+      index++;
+      setTimeout(addWord, delay);
+    }
+
+    addWord();
+  </script>
+</body>
+</html>
