@@ -9,8 +9,8 @@
     margin: 0;
     height: 100vh;
     display: flex;
-    justify-content: center; /* centrato orizzontalmente */
-    align-items: center;     /* centrato verticalmente */
+    justify-content: center;
+    align-items: center;
     background-color: black;
     font-family: Arial, sans-serif;
     overflow: hidden;
@@ -18,31 +18,25 @@
 
   #text-container {
     max-width: 60%;
+    margin: 0 auto;
     font-size: 8vw;
     line-height: 1.2;
-    hyphens: none;
-    word-wrap: normal;
-    text-align: justify;       /* giustificato */
-    text-align-last: right;    /* ultima riga a destra */
+    text-align: justify;
+    text-align-last: right;
     transition: opacity 3s ease;
   }
-  @media screen and (max-width: 768px) {
-  #text-container {
-    max-width: 90%;   /* testo più largo su mobile */
-    font-size: 11vw;  /* eventualmente aumenta leggermente la dimensione */
-  }
-}
 
-@media screen and (max-width: 480px) {
-  #text-container {
-    max-width: 95%;   /* quasi tutto lo schermo sui telefoni piccoli */
-    font-size: 12vw;
+  @media screen and (max-width: 768px) {
+    #text-container { max-width: 90%; font-size: 11vw; }
   }
-}
+  @media screen and (max-width: 480px) {
+    #text-container { max-width: 95%; font-size: 12vw; }
+  }
 
   .underline { text-decoration: underline; }
   .italic { font-style: italic; }
   .strikethrough { text-decoration: line-through; }
+
   .highlight-red { background-color: #ff4d4d; color: black; }
   .highlight-orange { background-color: #ffa64d; color: black; }
   .highlight-yellow { background-color: #ffff66; color: black; }
@@ -51,7 +45,6 @@
   .highlight-indigo { background-color: #9999ff; color: black; }
   .highlight-violet { background-color: #e580ff; color: black; }
   .highlight-white { background-color: #ffffff; color: black; }
-  .highlight-black { background-color: #000000; color: white; }
 
   .red { color: #ff4d4d; }
   .orange { color: #ffa64d; }
@@ -62,7 +55,7 @@
   .violet { color: #e580ff; }
   .white { color: #ffffff; }
 
-  .fade-in { opacity: 0; animation: fade 0.2s forwards; }
+  .fade-in { opacity: 0; animation: fade 0.5s forwards; }
   @keyframes fade { to { opacity: 1; } }
 </style>
 </head>
@@ -79,18 +72,23 @@ let lastColor = null;
 
 // Applica effetti casuali a una parola
 function randomEffect(wordEl){
-    wordEl.className = "";
+    // Non azzerare tutto, togli solo eventuali effetti passati
+    wordEl.classList.remove("underline","italic","strikethrough",
+        "highlight-red","highlight-orange","highlight-yellow",
+        "highlight-green","highlight-blue","highlight-indigo",
+        "highlight-violet","highlight-white");
+
+    // Colore casuale
     let color;
-    do {
-        color = rainbowColors[Math.floor(Math.random()*rainbowColors.length)];
-    } while(color === lastColor);
+    do { color = rainbowColors[Math.floor(Math.random()*rainbowColors.length)]; }
+    while(color === lastColor);
     lastColor = color;
     wordEl.classList.add(color);
 
     const effects = ["underline","italic","strikethrough",
-                 "highlight-red","highlight-orange","highlight-yellow",
-                 "highlight-green","highlight-blue","highlight-indigo",
-                 "highlight-violet","highlight-white","highlight-black",""];
+        "highlight-red","highlight-orange","highlight-yellow",
+        "highlight-green","highlight-blue","highlight-indigo",
+        "highlight-violet","highlight-white",""];
     const eff = effects[Math.floor(Math.random()*effects.length)];
     if(eff) wordEl.classList.add(eff);
 }
@@ -110,13 +108,16 @@ function generateText(words, callback){
         span.textContent = words[index] + " ";
         span.classList.add("fade-in");
         container.appendChild(span);
-// Applica effetti solo dalla quarta parola con delay più lento
-      setTimeout(()=>{
-        const allWords = container.querySelectorAll("span");
-        const randomIndex = Math.floor(Math.random() * allWords.length);
-        randomEffect(allWords[randomIndex]);
-    }, effectDelay);
-}
+
+        // Applica effetti solo dalla quarta parola
+        if(index >= 3){
+            setTimeout(()=>{
+                const allWords = container.querySelectorAll("span");
+                const randomIndex = Math.floor(Math.random() * allWords.length);
+                randomEffect(allWords[randomIndex]);
+            }, effectDelay);
+        }
+
         // Scroll se necessario
         if(container.scrollHeight > window.innerHeight){
             window.scrollTo({ top: container.scrollHeight - window.innerHeight, behavior: "smooth" });
@@ -130,9 +131,7 @@ function generateText(words, callback){
 }
 
 // Mescola le parole
-function shuffleArray(array){
-    return array.sort(() => Math.random() - 0.5);
-}
+function shuffleArray(array){ return array.sort(() => Math.random() - 0.5); }
 
 // Ciclo infinito: genera -> fade out -> rigenera
 function startCycle(){
@@ -146,8 +145,8 @@ function startCycle(){
                 generateText(shuffled, () => {
                     startCycle();
                 });
-            }, 4000);
-        }, 4000);
+            }, 6000); // nero prolungato prima di ricominciare
+        }, 4000); // fade out più lento
     });
 }
 
