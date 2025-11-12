@@ -26,7 +26,7 @@
     line-height: 1.2;
     text-align: justify;
     text-align-last: right;
-    transition: opacity 1s ease;
+    transition: opacity 1s ease; /* transizione morbida per fade */
   }
 
   /* === RESPONSIVE DESIGN === */
@@ -100,12 +100,11 @@ const highlightColors = [
 let container = document.getElementById("text-container");
 let delay = 900;          // tempo tra una parola e l'altra
 let effectDelay = 400;    // velocità di variazione effetti
-let activeTime = 15000;   // tempo in cui il testo resta visibile (15s)
+let activeTime = 10000;   // tempo in ms in cui il testo resta visibile (10s)
 let blackPause = 6000;    // durata pausa schermo nero (6s)
 let lastColor = null;
-let previousOrders = [];  // salva ordini parole già usati
-let firstCycle = true;    // flag: prima generazione = testo originale
-let cycleInterval = null; // per animazione continua parole
+let previousOrders = [];  // per memorizzare gli ordini usati
+let firstCycle = true;    // flag per sapere se è la prima generazione
 
 /* === FUNZIONE: applica effetti casuali a una parola === */
 function randomEffect(wordEl){
@@ -114,7 +113,7 @@ function randomEffect(wordEl){
       ...highlightColors, ...textColors
     );
 
-    // Sceglie un colore casuale (diverso dall'ultimo)
+    // Sceglie un colore testo casuale (non uguale all'ultimo)
     let color;
     do {
       color = textColors[Math.floor(Math.random() * textColors.length)];
@@ -122,12 +121,12 @@ function randomEffect(wordEl){
     lastColor = color;
     wordEl.classList.add(color);
 
-    // Evidenziatore casuale diverso dal colore
+    // Sceglie un evidenziatore diverso dal colore
     let validHighlights = highlightColors.filter(h => !h.includes(color));
     const highlight = validHighlights[Math.floor(Math.random() * validHighlights.length)];
     if (highlight) wordEl.classList.add(highlight);
 
-    // Effetti tipografici casuali
+    // Aggiunge effetti tipografici casuali
     const effects = ["underline","italic","strikethrough",""];
     const eff = effects[Math.floor(Math.random() * effects.length)];
     if(eff) wordEl.classList.add(eff);
@@ -138,7 +137,6 @@ function generateText(words, callback){
     container.innerHTML = "";
     let index = 0;
 
-    // funzione ricorsiva per mostrare ogni parola gradualmente
     function addWord(){
         if(index >= words.length){
             callback();
@@ -148,12 +146,21 @@ function generateText(words, callback){
         const span = document.createElement("span");
         span.textContent = words[index] + " ";
         span.classList.add("fade-in");
+
         container.appendChild(span);
 
-        // Applica subito l'effetto iniziale
+        // Applica subito effetto anche alla prima parola
         randomEffect(span);
 
-        // Scroll automatico quando necessario
+        // Applica effetti progressivamente a tutte le parole
+        const allWords = container.querySelectorAll("span");
+        allWords.forEach((w, i) => {
+            setTimeout(() => randomEffect(w), i * effectDelay);
+        });
+
+        index++;
+
+        // Scroll automatico quando il testo supera la finestra
         requestAnimationFrame(() => {
             if (container.scrollHeight > window.innerHeight) {
                 window.scrollTo({
@@ -163,58 +170,47 @@ function generateText(words, callback){
             }
         });
 
-        index++;
         setTimeout(addWord, delay);
     }
 
     addWord();
 }
 
-/* === FUNZIONE: mescola array parole (diverso ogni volta) === */
+/* === FUNZIONE: mescola array parole === */
 function shuffleArray(array){
+    // crea una nuova copia per non modificare l’originale
     let newArr;
     let alreadyUsed = true;
+
+    // genera una nuova disposizione finché non è unica
     do {
       newArr = array.slice().sort(() => Math.random() - 0.5);
       alreadyUsed = previousOrders.some(order =>
         order.join(" ") === newArr.join(" ")
       );
     } while(alreadyUsed);
+
+    // salva questo ordine per evitare ripetizioni future
     previousOrders.push(newArr.slice());
+
     return newArr;
-}
-
-/* === FUNZIONE: applica ciclicamente effetti a tutte le parole === */
-function startContinuousEffects(){
-    stopContinuousEffects(); // ferma eventuali intervalli precedenti
-    cycleInterval = setInterval(() => {
-        const words = container.querySelectorAll("span");
-        words.forEach(w => randomEffect(w));
-    }, effectDelay * 3); // ogni parola cambia effetto ogni ~1.2s
-}
-
-/* === FERMA GLI EFFETTI CONTINUI === */
-function stopContinuousEffects(){
-    if (cycleInterval) clearInterval(cycleInterval);
 }
 
 /* === FUNZIONE: ciclo infinito === */
 function startCycle(){
     const words = originalText.split(" ");
+
+    // Se è la prima volta → ordine originale
     const sequence = firstCycle ? words : shuffleArray(words);
 
     generateText(sequence, () => {
-        // quando ha finito di scrivere, inizia le animazioni continue
-        startContinuousEffects();
-
-        // resta animato per 15s
         setTimeout(() => {
-            stopContinuousEffects();
-            container.style.opacity = 0; // fade al nero
+            // Fade al nero per la pausa
+            container.style.opacity = 0;
             setTimeout(() => {
                 container.style.opacity = 1;
-                firstCycle = false;
-                startCycle(); // ricomincia nuovo ciclo
+                firstCycle = false; // dalla prossima volta sarà random
+                startCycle(); // ricomincia
             }, blackPause);
         }, activeTime);
     });
