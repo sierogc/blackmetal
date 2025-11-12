@@ -66,30 +66,31 @@
 const originalText = "Questo è un test avanzato: le parole appariranno parola per parola, resteranno visibili, cambieranno colore ed effetto, e poi la frase si mixerà e ricomincerà.";
 const rainbowColors = ["red","orange","yellow","green","blue","indigo","violet","white"];
 let container = document.getElementById("text-container");
-let delay = 900;
-let effectDelay = 1400;  
+let delay = 900;         // tempo tra una parola e l'altra
+let effectDelay = 400;   // velocità con cui cambiano gli effetti
 let lastColor = null;
 
 // Applica effetti casuali a una parola
 function randomEffect(wordEl){
-    // Non azzerare tutto, togli solo eventuali effetti passati
+    // Rimuove solo gli effetti passati
     wordEl.classList.remove("underline","italic","strikethrough",
         "highlight-red","highlight-orange","highlight-yellow",
         "highlight-green","highlight-blue","highlight-indigo",
         "highlight-violet","highlight-white");
 
-    // Colore casuale
+    // Colore casuale (mai nero)
     let color;
-    do { color = rainbowColors[Math.floor(Math.random()*rainbowColors.length)]; }
+    do { color = rainbowColors[Math.floor(Math.random() * rainbowColors.length)]; }
     while(color === lastColor);
     lastColor = color;
     wordEl.classList.add(color);
 
+    // Effetti extra
     const effects = ["underline","italic","strikethrough",
         "highlight-red","highlight-orange","highlight-yellow",
         "highlight-green","highlight-blue","highlight-indigo",
-        "highlight-violet","highlight-white"];
-    const eff = effects[Math.floor(Math.random()*effects.length)];
+        "highlight-violet","highlight-white",""];
+    const eff = effects[Math.floor(Math.random() * effects.length)];
     if(eff) wordEl.classList.add(eff);
 }
 
@@ -109,13 +110,13 @@ function generateText(words, callback){
         span.classList.add("fade-in");
         container.appendChild(span);
 
-        // Applica effetti solo dalla quarta parola
-        if(index >= 3){
-            setTimeout(()=>{
-                const allWords = container.querySelectorAll("span");
-                const randomIndex = Math.floor(Math.random() * allWords.length);
-                randomEffect(allWords[randomIndex]);
-            }, effectDelay);
+        // Aggiorna effetti di tutte le parole già generate
+        if(index >= 1){ // dalla seconda parola in poi
+            const allWords = container.querySelectorAll("span");
+            allWords.forEach((w, i) => {
+                // Applica effetti con un piccolo delay per dare movimento
+                setTimeout(()=> randomEffect(w), i * effectDelay);
+            });
         }
 
         // Scroll se necessario
@@ -145,8 +146,8 @@ function startCycle(){
                 generateText(shuffled, () => {
                     startCycle();
                 });
-            }, 6000); // nero prolungato prima di ricominciare
-        }, 4000); // fade out più lento
+            }, 6000); // pausa nera prolungata
+        }, 4000); // fade out lento
     });
 }
 
