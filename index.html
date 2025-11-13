@@ -64,7 +64,7 @@ body {
 <div id="text-container"></div>
 
 <script>
-const originalText = "Serpent tongues. Now my hair so long and I can't stand them. Don't let anything grow. More is always for the weak. My friend's mom used to say that anything grows to become awful. Tongue. Horse tongue. I hear footsteps and furniture moving above my head. When I wake up and when I need to sleep. There is no one there. I might go insane. Insane, insane. I hear voices singing my name. Voices keep talking about my mistakes. Snail tongue. I don't care, I don't care, I don't care, I don't care, I don't care. My brother's birthday was lame. Lame, lame, lame, lame. Cow tongue. I don't care about cars, I don't care about flash, I don't care about your fees, I don't care about your plays, I don't care about your newborn babies. Your face linked to the fence that splits dream and dreamer. You broke my heart and now I break your legs. Send a kiss. Hello, goodbye. I get the stares. Stares, stares, stares. They understand. Cat tongue. Nail through metal, close the lids of the hater. Lick the piss off the floor. Lame, lame, lame. You can't see the math. I'm not afraid, I'm not afraid, I'm not afraid. Drill a hole in this door. Spit on the knob. Kill the pregnant woman. Don't waste my time. Don't waste my time. Don't waste my time.";
+const originalText = "Serpent tongues. Now my hair so long I can't stand them. Don't let anything grow. More is always for the weak. My grandma used to say that anything grows to become awful. Tongue. Horse tongue. I hear footsteps and furniture moving above my head. When I wake up and when I need to sleep. There is no one there. I might go insane. Insane, insane. Insane, insane. I hear voices singing my name. Relatives keep talking about my mistakes. Snail tongue. I don't care, I don't care, I don't care, I don't care, I don't care. My brother's birthday was lame. Lame, lame, lame, lame. Cow tongue. I don't care about cars, I don't care about flash, I don't care about fees, I don't care about your plays, I don't care about your newborn babies. Your face linked to the fence that splits dream and dreamer. You broke my heart and now I break your legs. Send a kiss. Hello, goodbye. I get the stares. Stares, stares, stares. They understand everything. Cat tongue. Nail through metal, close the lids of the hater. Lick the piss off the floor. Puke. You can't see the math. I'm not afraid, I'm not afraid, I'm not afraid. Drill a hole in this door. Spit on the knob. Shoot the dad. Choke the pregnant wife. Don't waste my time. Don't waste my time. Don't waste my time.";
 
 const textColors = ["red","orange","yellow","green","blue","indigo","violet","white","pink","cyan","lime","gold","magenta"];
 const highlightColors = ["highlight-red","highlight-orange","highlight-yellow","highlight-green","highlight-blue","highlight-indigo","highlight-violet","highlight-white","highlight-pink","highlight-cyan","highlight-lime","highlight-gold"];
@@ -125,7 +125,7 @@ function generateText(words, callback){
         });
 
         index++;
-        setTimeout(addWord, delay);
+        setTimeout(addWord, delay * 0.5);
     }
 
     addWord();
